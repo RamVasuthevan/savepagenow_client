@@ -19,4 +19,3 @@
     },
     "postCreateCommand": "pipenv sync --dev"
 }
-# TEST TO BE OVERWRITEN
