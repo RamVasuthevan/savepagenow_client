@@ -1,10 +1,14 @@
 from savepagenow import SavePageNow
 from pprint import pprint
 from time import sleep
+import os
 
-spn = SavePageNow(accesskey="He79jn81G6ruAsGm",secretkey="A71vBhJ7feRILdCy")
+accesskey = os.environ.get('ACCESS_KEY')
+secretkey = os.environ.get('SECRET_KEY')
 
-page_num = 56
+spn = SavePageNow(accesskey=accesskey,secretkey=secretkey)
+
+page_num = 57
 url = f"http://taxes.cityofjerseycity.com/?page={page_num}"
 result = spn.save_page(url=url,capture_all=True,email_result=True, outlinks_availability=True, capture_outlinks=True)
 pprint(result)
