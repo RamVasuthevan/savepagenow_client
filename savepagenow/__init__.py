@@ -83,7 +83,7 @@ class SavePageNow:
             # del self.jobid_error[job_id]
         
         responses = responses.json()
-
+        print(responses)
         for response in responses:
             if response["status"] == "pending":
                 self.jobid_pending[response["job_id"]] = response
@@ -92,11 +92,17 @@ class SavePageNow:
             elif response["status"] == "error":
                 self.jobid_error[response["job_id"]] = response
 
-            if isinstance(response["outlinks"], dict):
+            if "outlinks" in response and isinstance(response["outlinks"], dict):
                 for url, job_id in response["outlinks"].items():
                     self.url_jobid[url] = job_id
-                    self.jobid_started_outlink[job_id] = response
-        return response
+                    try:
+                        self.jobid_started_outlink[job_id] = response
+                    except TypeError:
+                        print("------------------")
+                        print(job_id)
+                        print(response)
+                        print("------------------")
+        return responses
 
     def update_all_job_statuses(self) -> list[Dict]:
         return self.update_job_statuses(list(set(self.jobid_started.keys() | set(self.jobid_pending.keys()| set(self.jobid_started_outlink.keys())))))
