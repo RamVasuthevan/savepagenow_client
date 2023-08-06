@@ -1,0 +1,77 @@
+import requests
+
+url = "http://web.archive.org/save/status/system"
+
+payload = {}
+headers = {
+  'Accept': 'application/json',
+  'Authorization': 'LOW {{accesskey}}:{{secret}}'
+}
+
+response = requests.request("GET", url, headers=headers, data=payload)
+
+print(response.text)
+
+
+
+import requests
+
+url = "http://web.archive.org/save/status/user"
+
+payload = {}
+headers = {
+  'Accept': 'application/json',
+  'Authorization': 'LOW {{accesskey}}:{{secret}}'
+}
+
+response = requests.request("GET", url, headers=headers, data=payload)
+
+print(response.text)
+
+import requests
+
+url = "http://web.archive.org/save/status/spn2-9cbab8c09cb4ab7f378b96fd09e00ce7cb4fa10a"
+
+payload = {}
+headers = {
+  'Accept': 'application/json',
+  'Authorization': 'LOW {{accesskey}}:{{secret}}'
+}
+
+response = requests.request("GET", url, headers=headers, data=payload)
+
+print(response.text)
+
+
+import requests
+
+url = "https://web.archive.org/save/status/"
+
+payload = {'jobs_ids': 'spn2-24bd8851abbd847eba70f94d723d5eacb8ebd75e,spn2-f016c4e3a53c6f864ff46d32592ce467760a4442,spn2-9cbab8c09cb4ab7f378b96fd09e00ce7cb4fa10a'}
+files=[
+
+]
+headers = {
+  'Accept': 'application/json',
+  'Authorization': 'LOW {{accesskey}}:{{secret}}'
+}
+
+response = requests.request("GET", url, headers=headers, data=payload, files=files)
+
+print(response.text)
+
+
+import requests
+
+url = "https://web.archive.org/save"
+
+payload = 'url=http%3A%2F%2Ftaxes.cityofjerseycity.com%2F%3Fpage%3D20&capture_all=1&capture_screenshot=1&outlinks_availability=1&email_result=1'
+headers = {
+  'Accept': 'application/json',
+  'Authorization': 'LOW {{accesskey}}:{{secret}}',
+  'Content-Type': 'application/x-www-form-urlencoded'
+}
+
+response = requests.request("POST", url, headers=headers, data=payload)
+
+print(response.text)
