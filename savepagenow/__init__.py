@@ -10,7 +10,10 @@ class SavePageNow:
 
         self.url_jobid: Dict[str:str] = {}
         self.jobid_response: Dict[str:str] = {}
-        self.jobid_status: Dict[str:str] = {}
+        self.jobid_pending: Dict[str:Dict] = {}
+        self.jobid_started: Dict[str:Dict] = {}
+        self.jobid_success: Dict[str:Dict] = {}
+        self.jobid_error: Dict[str:Dict] = {}
 
     def system_status(self) -> Any:
         response = api.system_status(self.accesskey, self.secretkey)
@@ -19,42 +22,7 @@ class SavePageNow:
     def user_status(self) -> Any:
         response = api.user_status(self.accesskey, self.secretkey)
         return response.json()
-
-    def _update_job_response(self,job_ids: Union[str, Collection[str]]) -> Any:
-        input_type = isinstance(job_ids, str)
-        if input_type:
-            job_ids = [job_ids]
-        
-        for job_id in job_ids:
-            if job_id not in self.jobid_response and job_id not in self.jobid_status:
-                raise ValueError(f"{job_id} is not a valid job_id")
-        
-        pending_job_ids = [job_id for job_id in self.jobid_response if self.jobid_response[job_id]["status"] == "pending"]
-
-        response = api.advanced_request_status(self.accesskey, self.secretkey, pending_job_ids)
-        for job_id,response in zip(pending_job_ids,response.json()):
-            self.jobid_response[job_id] = response
-            self.jobid_status[job_id] = response["status"]
-
-        if input_type == str:
-            return self.jobid_response[job_id]
-        else:
-            return [self.jobid_response[job_id] for job_id in job_ids]
-    
-    def job_response_by_jobid(self, job_ids: Union[str, Collection[str]]) -> Any:
-        input_type = isinstance(job_ids, str)
-      
-        self._update_job_response(job_ids)
-
-        if input_type == str:
-            return self.jobid_response[job_ids]
-        else:
-            return [self.jobid_response[job_id] for job_id in job_ids]
-
-    def all_job_responses(self):
-        self._update_job_response(self.jobid_response.keys())
-        return self.jobid_response.keys()
-    
+       
     def save_page(
         self,
         url: str, 
@@ -94,11 +62,47 @@ class SavePageNow:
             target_username,
             target_password
         )
-        job_id = response.json().get('job_id')
-        self.url_jobid[url] = job_id
-        self.jobid_status[job_id] = "pending"
-        return response.json()
+        response = response.json()
 
-    def jobid_by_status(self,status:str)->Set[str]:
-        self.
-        return (jobid for jobid,job_status in self.jobid_response if job_status == status).union(jobid for jobid,job_status in self.jobid_status if job_status == status)
+        self.jobid_started[response["job_id"]] = response
+        self.url_jobid[url] = response["job_id"]
+
+        return response
+
+    def update_job_status(self, job_id: str) -> Any:
+        response = api.advanced_request_status(self.accesskey, self.secretkey, [job_id])
+        response = response.json()
+
+        del self.jobid_started[job_id]
+        del self.jobid_pending[job_id] 
+        del self.jobid_success[job_id] # can a success to error stutus response be changed?
+        del self.jobid_error[job_id]
+
+        if response["status"] == "pending":
+            self.jobid_pending[response["job_id"]] = response
+        elif response["status"] == "success":
+            self.jobid_success[response["job_id"]] = response
+        elif response["status"] == "error":
+            self.jobid_error[response["job_id"]] = response
+
+        return response
+    
+    def update_all_job_status(self) -> Any:
+        job_ids = list(set(self.jobid_started.keys()) | set(self.jobid_pending.keys()))
+        response = api.advanced_request_status(self.accesskey, self.secretkey, job_ids)
+
+        for job_id in job_ids:
+            del self.jobid_started[job_id]
+            del self.jobid_pending[job_id] 
+        
+        response = response.json()
+
+        for value in response:
+            if value["status"] == "pending":
+                self.jobid_pending[value["job_id"]] = value
+            elif value["status"] == "success":
+                self.jobid_success[value["job_id"]] = value
+            elif value["status"] == "error":
+                self.jobid_error[value["job_id"]] = value
+
+        return response
