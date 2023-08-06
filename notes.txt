@@ -1,0 +1,24 @@
+
+2 / 2
+
+Certainly!
+
+When URLs are embedded as query parameters in another URL or included in HTTP request payloads, it's important to ensure that they don't contain characters that have special meanings in the context of the URL or payload. Such characters could break the URL or lead to incorrect processing by the server.
+
+For example, consider a URL like this:
+
+arduino
+Copy code
+http://example.com/page?name=John&age=25
+If we were to include this URL as a query parameter in another URL without encoding it, the server might interpret the embedded & as a separator for a new parameter, rather than as part of the original URL. This would lead to unexpected behavior or errors.
+
+The function urllib.parse.quote URL-encodes such special characters to ensure that the URL can be safely embedded in another URL or used in an HTTP request payload.
+
+Sample GitHub Issue:
+
+Title: URLs Not Properly Encoded in save_page Function
+
+Description:
+
+In the save_page function, URLs are being embedded directly into the HTTP request payload without being URL-encoded. This could lead to errors or unexpected behavior if the URL contains special characters, such as &, =, or ?.
+
