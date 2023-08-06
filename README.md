@@ -1,4 +1,4 @@
-# savepagenow_client
+# SavePageNow Client
 
 This is work in progress Python wrapper for archive.org’s Save Page Now API.
 
