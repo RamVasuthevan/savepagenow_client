@@ -3,14 +3,20 @@ from pprint import pprint
 from time import sleep
 import os
 
-accesskey = os.environ.get('ACCESS_KEY')
-secretkey = os.environ.get('SECRET_KEY')
+accesskey = os.environ.get("ACCESS_KEY")
+secretkey = os.environ.get("SECRET_KEY")
 
-spn = SavePageNow(accesskey=accesskey,secretkey=secretkey)
+spn = SavePageNow(accesskey=accesskey, secretkey=secretkey)
 
-page_num = 57
+page_num = 62
 url = f"http://taxes.cityofjerseycity.com/?page={page_num}"
-result = spn.save_page(url=url,capture_all=True,email_result=True, outlinks_availability=True, capture_outlinks=True)
+result = spn.save_page(
+    url=url,
+    capture_all=True,
+    email_result=True,
+    outlinks_availability=True,
+    capture_outlinks=True,
+)
 pprint(result)
 sleep(30)
 pprint(spn.update_all_job_statuses())
